@@ -1,9 +1,14 @@
+<div id="msg"></div>
+<div id="player"></div>
+
 <script>
 let lastUrl = "";
 
 async function checkVideo() {
   try {
-    const res = await fetch("https://api.jsonbin.io/v3/b/698a228cd0ea881f40ada6fc");
+    const res = await fetch(
+      "https://api.jsonbin.io/v3/b/698a228cd0ea881f40ada6fc/latest"
+    );
     const json = await res.json();
     const data = json.record;
 
@@ -29,6 +34,8 @@ async function checkVideo() {
   }
 }
 
-checkVideo();
-setInterval(checkVideo, 2000);
+document.addEventListener("DOMContentLoaded", () => {
+  checkVideo();
+  setInterval(checkVideo, 2000);
+});
 </script>
