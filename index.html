@@ -1,41 +1,45 @@
-<div id="msg"></div>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Test JSONBin</title>
+</head>
+<body>
+
+<h1 id="msg"></h1>
 <div id="player"></div>
 
 <script>
 let lastUrl = "";
 
 async function checkVideo() {
-  try {
-    const res = await fetch(
-      "https://api.jsonbin.io/v3/b/698a228cd0ea881f40ada6fc"
-    );
-    const json = await res.json();
-    const data = json.record;
+  const res = await fetch(
+    "https://api.jsonbin.io/v3/b/698a228cd0ea881f40ada6fc/latest"
+  );
+  const json = await res.json();
+  const data = json.record;
 
-    if (!data.video || data.video === lastUrl) return;
-    lastUrl = data.video;
+  if (!data.video || data.video === lastUrl) return;
+  lastUrl = data.video;
 
-    document.getElementById("msg").innerText = data.message || "";
+  document.getElementById("msg").innerText = data.message;
 
-    const player = document.getElementById("player");
-    player.innerHTML = "";
+  const player = document.getElementById("player");
+  player.innerHTML = "";
 
-    const iframe = document.createElement("iframe");
-    iframe.src = data.video + "?autoplay=1&mute=1";
-    iframe.width = "560";
-    iframe.height = "315";
-    iframe.allow = "autoplay; fullscreen";
-    iframe.allowFullscreen = true;
+  const iframe = document.createElement("iframe");
+  iframe.src = data.video + "?autoplay=1&mute=1";
+  iframe.width = "560";
+  iframe.height = "315";
+  iframe.allow = "autoplay; fullscreen";
+  iframe.allowFullscreen = true;
 
-    player.appendChild(iframe);
-
-  } catch (e) {
-    console.error(e);
-  }
+  player.appendChild(iframe);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  checkVideo();
-  setInterval(checkVideo, 2000);
-});
+checkVideo();
 </script>
+
+</body>
+</html>
+
