@@ -1,54 +1,44 @@
-<div id="msg"></div>
+<h1 id="msg"></h1>
 <div id="player"></div>
 
-<script src="https://www.youtube.com/iframe_api"></script>
 <script>
-let lastUrl = "";
-let ytPlayer = null;
-
-function extractVideoId(url) {
-  const match = url.match(/embed\/([^?]+)/);
-  return match ? match[1] : null;
-}
+let lastData = "";
 
 async function checkVideo() {
-  const res = await fetch(
-    "https://api.jsonbin.io/v3/b/698a228cd0ea881f40ada6fc/latest"
-  );
-  const json = await res.json();
-  const data = json.record;
+  try {
+    const res = await fetch(
+      "https://api.jsonbin.io/v3/b/698a228cd0ea881f40ada6fc/latest"
+    );
+    const json = await res.json();
+    const data = json.record;
 
-  document.getElementById("msg").innerText = data.message || "";
+    const currentData = JSON.stringify(data);
+    if (currentData === lastData) return;
+    lastData = currentData;
 
-  if (!data.video) return;
+    // Message
+    document.getElementById("msg").innerText = data.message || "";
 
-  if (data.video === lastUrl && ytPlayer) return;
-  lastUrl = data.video;
+    // Vidéo
+    if (!data.video) return;
 
-  const videoId = extractVideoId(data.video);
-  if (!videoId) return;
+    const player = document.getElementById("player");
+    player.innerHTML = "";
 
-  if (ytPlayer) {
-    ytPlayer.loadVideoById(videoId);
-  } else {
-    ytPlayer = new YT.Player("player", {
-      width: 560,
-      height: 315,
-      videoId: videoId,
-      playerVars: {
-        autoplay: 1,
-        mute: 1,
-        playsinline: 1
-      },
-      events: {
-        onReady: e => e.target.playVideo()
-      }
-    });
+    const iframe = document.createElement("iframe");
+    iframe.src = data.video + "?autoplay=1&mute=1&rel=0";
+    iframe.width = "560";
+    iframe.height = "315";
+    iframe.allow = "autoplay; fullscreen";
+    iframe.allowFullscreen = true;
+
+    player.appendChild(iframe);
+
+  } catch (e) {
+    console.error("Erreur :", e);
   }
 }
 
-function onYouTubeIframeAPIReady() {
-  checkVideo();
-  setInterval(checkVideo, 2000);
-}
+checkVideo();
+setInterval(checkVideo, 2000);
 </script>
